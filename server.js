@@ -10,7 +10,7 @@ app.get("/", (req, res) => {
 });
 
 // Endpoint principal
-app.post("/cartorio", async (req, res) => {
+app.post("/cartorios", async (req, res) => {
   const { municipio, uf } = req.body;
 
   if (!municipio || !uf) {
@@ -27,12 +27,13 @@ app.post("/cartorio", async (req, res) => {
     const data = await response.json();
 
     // Filtra os cartórios que atendem o município
-    const cartoriosMunicipio = data.filter(c =>
+    let cartoriosMunicipio = data.filter(c =>
       c.municipio.toLowerCase() === municipio.toLowerCase()
     );
 
+    // Fallback: se não encontrar cartório, retorna todos da UF (ou você pode customizar)
     if (cartoriosMunicipio.length === 0) {
-      return res.status(404).json({ error: "Nenhum cartório encontrado para este município" });
+      cartoriosMunicipio = data; // fallback simples: todos da UF
     }
 
     res.json({ cartorios: cartoriosMunicipio });
